@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경로탐색 홈페이지</title>
+</head>
+
+<body>
+    <h1>성공!</h1>
+    <a href="{% url 'main' %}">메인으로 돌가가기 </a>
+    <h1>출발지: {{ object_detail.start_point}}</h1>
+    <h1>도착지: {{ object_detail.end_point}}</h1>
+    <h1>선호하는 이동경로: {{ object_detail.route}}</h1>
+    <h1>가중치, 선호도 등은 고려하지 않은 단순 최단경로: {{ result_route}}</h1>
+    {% comment %} <h1>테스트: {{ test}}</h1> {% endcomment %}
+</body>
+
+</html>

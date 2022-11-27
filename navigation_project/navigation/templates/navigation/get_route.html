@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경로탐색 경로입력 페이지</title>
+</head>
+
+<body>
+    <h1>안녕하세요!!!!!</h1>
+    <h2>출발지, 도착지 입력의 경우 n101과 같은 형식으로 입력해주세요.</h2>
+    <h2>감사합니다.</h2>
+    <form method="post">{% csrf_token %} <!--여기 action에 암것도 안 적었으니까 page-create url로 넘어감. 거기서 방식이 get인지 post인지 따라서 view가 처리함-->
+        {{form.as_p}}
+        <input type="submit">
+    </form>
+</body>
+
+</html>
