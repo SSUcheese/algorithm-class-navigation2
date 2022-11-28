@@ -14,8 +14,11 @@
     <h1>출발지: {{ object_detail.start_point}}</h1>
     <h1>도착지: {{ object_detail.end_point}}</h1>
     <h1>선호하는 이동경로: {{ object_detail.route}}</h1>
-    <h1>가중치, 선호도 등은 고려하지 않은 단순 최단경로: {{ result_route}}</h1>
-    {% comment %} <h1>테스트: {{ test}}</h1> {% endcomment %}
+    <h1>가중치, 선호도 등은 고려하지 않은 단순 최단경로: {{ shortest_route}}</h1>
+    <h1>보편적인 사용자 선호 경로: {{ recommended_path}}</h1>
+    <h1>엘리베이터만을 이용한 경로: {{elevator_route}}</h1>
+    
+
 </body>
 
 </html>

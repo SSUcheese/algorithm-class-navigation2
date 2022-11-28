@@ -6,7 +6,7 @@ import heapq
 input = sys.stdin.readline
 
 
-def route_search(start_point, end_point):
+def route_search(start_point, end_point, w):
     data = {}
 
     # data 딕셔너리 초기화
@@ -94,30 +94,39 @@ def route_search(start_point, end_point):
     n33 = init('n33', [['n399', 0]])
 
     # 이동수단 가중치 수식
-    w_0 = 0  # 엘베 가중치
-    w_1 = 0  # 비상계단 가중치
-    w_2 = 0  # 소용돌이계단 가중치
-    w_3 = 0  # 직선계단 가중치
+    w_0 = w[0]  # 엘베 가중치
+    w_1 = w[1]  # 비상계단 가중치
+    w_2 = w[2]  # 소용돌이계단 가중치
+    w_3 = w[3]  # 직선계단 가중치
 
     # 층 이동 노드 초기화 if 문 이용해서 층 이동에 따라 계단, 엘레베이터 정보 연결 시켜주기
-    # 1층,2층 사이 이동
-    init('n10', [['n20', w_0]])
-    init('n11_1', [['n21_1', w_1]])
-    init('n11_2', [['n21_2', w_1]])
-    init('n12', [['n22', w_2]])
-    init('n13', [['n23', w_3]])
-    # 1층,3층 사이 이동
-    init('n10', [['n30', w_0]])
-    init('n11_1', [['n31_1', w_1]])
-    init('n11_2', [['n31_2', w_1]])
-    init('n12', [['n32', w_2]])
-    init('n13', [['n33', w_3]])
-    # 2층,3층 사이 이동
-    init('n30', [['n20', w_0]])
-    init('n31_1', [['n21_1', w_1]])
-    init('n31_2', [['n21_2', w_1]])
-    init('n32', [['n22', w_2]])
-    init('n33', [['n23', w_3]])
+    def connect_1_2():
+        init('n10', [['n20', w_0]])
+        init('n11_1', [['n21_1', w_1]])
+        init('n11_2', [['n21_2', w_1]])
+        init('n12', [['n22', w_2]])
+        init('n13', [['n23', w_3]])
+
+    def connect_1_3():
+        init('n10', [['n30', w_0]])
+        init('n11_1', [['n31_1', w_1]])
+        init('n11_2', [['n31_2', w_1]])
+        init('n12', [['n32', w_2]])
+        init('n13', [['n33', w_3]])
+
+    def connect_2_3():
+        init('n30', [['n20', w_0]])
+        init('n31_1', [['n21_1', w_1]])
+        init('n31_2', [['n21_2', w_1]])
+        init('n32', [['n22', w_2]])
+        init('n33', [['n23', w_3]])
+
+    if (start_point[1] == '1' and end_point[1] == '3') or (start_point[1] == '3' and end_point[1] == '1'):
+        connect_1_3()
+    elif (start_point[1] == '1' and end_point[1] == '2') or (start_point[1] == '2' and end_point[1] == '1'):
+        connect_1_2()
+    elif (start_point[1] == '2' and end_point[1] == '3') or (start_point[1] == '3' and end_point[1] == '2'):
+        connect_2_3()
 
     def dijkstra(graph, start):
         distances = {node: float('inf') for node in graph}  # start로 부터의 거리 값을 저장하기 위함
@@ -160,4 +169,54 @@ def route_search(start_point, end_point):
     return route
 
 
-# test = route_search('n100','n3999')
+
+
+def w_updater(test):
+    user_pick = [0, 0, 0, 0]
+    after = [0, 0, 0, 0]
+    w = [0, 0, 0, 0]
+
+    # 현재 데이터상 사용자 선호도를 user_pick에 업데아트 하는 과정
+    for object in test:
+        route = object.route
+        if route == 'elevator':
+            user_pick[0] += 1
+        elif route == 'emergency_stair':
+            user_pick[1] += 1
+        elif route == 'whirlpool_stair':
+            user_pick[2] += 1
+        else:
+            user_pick[3] += 1 # 직선형 계단
+    print(user_pick)
+    
+    # 이번에는 가중치 값을 변경하면서 결과 관찰.
+    # 사용자가 가장 선호하는 특정 이동수단이 선택된 횟수와 계산상 결과에서 특정 이동수던이 선택된 횟수가 같을 때까지 계속 프로구램을 돌려 가중치를 업데이트한다.
+    # 가중치는 기본적으로 1 단위로 올린다. 여기서 가중치를 1단위로 올린다는 것은 결국 간선비용의 증가를 의미하며, 이는 해당 경로가 선택되는 경우를 최대한 억제하는 결과를 가져온다.
+
+    while True:
+        if user_pick[user_pick.index(max(user_pick))] <= after[user_pick.index(max(user_pick))]:
+            print(w)
+            return w
+        else:
+            for i in range(len(w)):
+                if i == user_pick.index(max(user_pick)):
+                    continue
+                else:
+                    w[i] += 1
+
+        after = [0, 0, 0, 0]
+
+        for object in test:
+            after_route = route_search(object.start_point, object.end_point, w)
+            for i in range(len(after_route) - 1):
+                if (len(after_route[i]) == 3) and (len(after_route[i + 1]) == 3):
+                    if after_route[i][2] == '0':  # 엘리베이터
+                        after[0] += 1
+                    elif after_route[i][2] == '2':  # 송용돌이 계단
+                        after[2] += 1
+                    elif after_route[i][3] == '2':  # 직선형 계단
+                        after[3] += 1
+                elif (len(after_route[i]) == 5 and '_' in after_route[i]) and (len(after_route[i+1]) == 5 and '_' in after_route[i+1]):
+                    after[1] += 1
+                    
+                    
